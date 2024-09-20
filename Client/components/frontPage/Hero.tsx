@@ -46,9 +46,9 @@ function Hero() {
           }}
         />
       </div>
-      <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-40 lg:flex lg:px-8 lg:pt-10">
+      <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-40 lg:flex lg:px-8 lg:pt-4">
         <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:mr-20 lg:max-w-xl lg:pt-10">
-          <h1 className="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-6xl">
             Code
           </h1>
           <h1 className="mt-7 text-4xl font-bold tracking-tight text-white sm:text-6xl">
@@ -85,7 +85,7 @@ function Hero() {
               alt="App screenshot"
               width={750}
               height={850}
-              className="rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10"
+              className="rounded-md bg-white/5 shadow-2xl mt-0 ring-1 ring-white/10"
             />
           </div>
         </div>

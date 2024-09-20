@@ -8,7 +8,7 @@ import { dark } from "@clerk/themes";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI - Compiler",
+  title: "AI - Compiler Auth",
   description: "A Next.js 13 Meta Threads Application",
 };
 

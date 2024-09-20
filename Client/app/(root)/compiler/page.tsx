@@ -22,14 +22,15 @@ const CodeEditor: React.FC = () => {
   };
 
   return (
-    <div className="p-4 h-screen bg-[rgb(15,10,25)]">
-      <div className="flex space-x-4">
+    <div className="pb-4 bg-[rgb(15,10,25)]">
+      <Header /> 
+      <div className="px-4 mt-2 flex space-x-4">
         <div className="w-full">
           <LanguageSelector language={language} onSelect={onSelect} />
           <Editor
             options={{
               minimap: {
-                enabled: false,
+                enabled: true,
               },
             }}
             height="75vh"

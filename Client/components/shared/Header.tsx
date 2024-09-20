@@ -15,7 +15,7 @@ const Header = () => {
     { name: "Company", href: "#" },
   ];
   return (
-    <header className="absolute inset-x-0 top-0 z-50 mx-7">
+    <header className="inset-x-0 top-0 px-7 ">
       <nav
         className="flex items-center justify-between p-6 lg:px-8"
         aria-label="Global"
