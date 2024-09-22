@@ -19,7 +19,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 }) => {
   return (
     <div className="ml-2 mb-4">
-      <p className="mb-2 text-2xl font-medium text-white">Language :</p>
+      <p className="mb-4 text-2xl font-medium text-white">Language :</p>
       <div className="relative inline-block">
         <select
           className="w-48 bg-gray-800 text-white rounded-md shadow-lg z-10 p-3"

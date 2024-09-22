@@ -116,7 +116,7 @@ const Footer = () => {
     ],
   };
   return (
-    <footer aria-labelledby="footer-heading" className="relative">
+    <footer aria-labelledby="footer-heading" className="relative bg-gray-900">
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>

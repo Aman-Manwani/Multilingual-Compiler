@@ -30,7 +30,6 @@ const ProfileForm: React.FC = () => {
               type="text"
               id="username"
               className="w-full px-3 py-2 bg-[rgb(16,16,18)] text-gray-300 rounded-lg border-[1px] border-white"
-              readOnly
             />
           </div>
 

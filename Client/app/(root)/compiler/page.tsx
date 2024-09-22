@@ -4,7 +4,6 @@ import { Editor, Monaco } from "@monaco-editor/react";
 import LanguageSelector from "./LanguageSelector";
 import { CODE_SNIPPETS } from "../../../constants/languages";
 import Output from "./Output";
-import Header from "@/components/shared/Header";
 
 const CodeEditor: React.FC = () => {
   const editorRef = useRef<Monaco | null>(null);
@@ -23,8 +22,7 @@ const CodeEditor: React.FC = () => {
 
   return (
     <div className="pb-4 bg-[rgb(15,10,25)]">
-      <Header /> 
-      <div className="px-4 mt-2 flex space-x-4">
+      <div className="px-4 pt-4 flex space-x-4">
         <div className="w-full">
           <LanguageSelector language={language} onSelect={onSelect} />
           <Editor

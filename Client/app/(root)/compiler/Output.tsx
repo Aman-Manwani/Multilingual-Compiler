@@ -30,7 +30,7 @@ const Output: React.FC<OutputProps> = ({ editorRef, language }) => {
 
   return (
     <div className="">
-      <p className="mb-2 text-2xl font-medium text-white">Output</p>
+      <p className="mb-5 text-2xl font-medium text-white">Output</p>
       <button
         className={`border border-green-500 text-green-500 px-4 py-2 rounded-md mb-4 ${
           isLoading ? "opacity-50 cursor-not-allowed" : ""

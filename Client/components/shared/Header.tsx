@@ -9,13 +9,14 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: "Product", href: "#" },
-    { name: "Features", href: "#" },
-    { name: "Marketplace", href: "#" },
-    { name: "Company", href: "#" },
+    { name: "Product", href: "/product" },
+    { name: "Features", href: "/features" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Contact Us", href: "/contact-us" },
+    { name: "FAQ's", href: "/faq" },
   ];
   return (
-    <header className="inset-x-0 top-0 px-7 ">
+    <header className="inset-x-0 top-0 px-7 bg-gray-900">
       <nav
         className="flex items-center justify-between p-6 lg:px-8"
         aria-label="Global"
