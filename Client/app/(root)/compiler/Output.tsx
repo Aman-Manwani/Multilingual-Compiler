@@ -44,6 +44,10 @@ const Output: React.FC<OutputProps> = ({ editorRef, language }) => {
         className={`h-[75vh] p-3 border rounded-md text-white ${
           isError ? "border-red-500 text-red-400" : "border-gray-700"
         }`}
+        style={{
+          maxHeight: "75vh", // Set a maximum height
+          overflowY: "auto",  // Enable vertical scrolling
+        }}
       >
         {output
           ? output.map((line, i) => <p key={i}>{line}</p>)

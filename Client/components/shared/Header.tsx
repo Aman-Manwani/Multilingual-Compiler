@@ -22,7 +22,7 @@ const Header = () => {
         aria-label="Global"
       >
         <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
+          <a href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
             <Image
               width={32}
@@ -55,7 +55,10 @@ const Header = () => {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <Link href="/sign-in" className="text-sm font-semibold leading-6 text-white">
+          <Link
+            href="/sign-in"
+            className="text-sm font-semibold leading-6 text-white"
+          >
             Login <span aria-hidden="true">&rarr;</span>
           </Link>
         </div>
@@ -102,10 +105,11 @@ const Header = () => {
                 ))}
               </div>
               <div className="py-6">
-                <Link 
+                <Link
                   href="/sign-in"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white">
-                    Login
+                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white"
+                >
+                  Login
                 </Link>
               </div>
             </div>

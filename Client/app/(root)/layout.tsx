@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
-// import Header from "@/components/shared/Header";
-// import Footer from "@/components/shared/Footer";
+// import "./globals.css";
+import Header from "@/components/shared/Header";
+import Footer from "@/components/shared/Footer";
 
 export const metadata: Metadata = {
   title: "AI - Compiler",
@@ -16,9 +16,9 @@ export default function RootLayout({
   return (
       <html lang="en">
         <body>
-          {/* <Header /> */}
+          <Header />
           {children}
-          {/* <Footer /> */}
+          <Footer />
         </body>
       </html>
   );
