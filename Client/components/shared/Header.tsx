@@ -4,12 +4,16 @@ import { Dialog } from "@headlessui/react";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import {
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: "Product", href: "/product" },
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
     { name: "Contact Us", href: "/contact-us" },
@@ -55,12 +59,18 @@ const Header = () => {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <Link
-            href="/sign-in"
-            className="text-sm font-semibold leading-6 text-white"
-          >
-            Login <span aria-hidden="true">&rarr;</span>
-          </Link>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <SignedOut>
+            <Link href="/sign-in">
+              <div className="flex cursor-pointer">
+                <p className="text-sm font-semibold leading-6 text-white">
+                  Login
+                </p>
+              </div>
+            </Link>
+          </SignedOut>
         </div>
       </nav>
       <Dialog
@@ -104,7 +114,7 @@ const Header = () => {
                   </a>
                 ))}
               </div>
-              <div className="py-6">
+              <div className="">
                 <Link
                   href="/sign-in"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white"

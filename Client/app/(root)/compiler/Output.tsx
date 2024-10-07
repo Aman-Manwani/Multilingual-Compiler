@@ -41,12 +41,12 @@ const Output: React.FC<OutputProps> = ({ editorRef, language }) => {
         {isLoading ? "Running..." : "Run Code"}
       </button>
       <div
-        className={`h-[75vh] p-3 border rounded-md text-white ${
+        className={`h-[75vh] p-3 border rounded-md text-white no-scrollbar ${
           isError ? "border-red-500 text-red-400" : "border-gray-700"
         }`}
         style={{
           maxHeight: "75vh", // Set a maximum height
-          overflowY: "auto",  // Enable vertical scrolling
+          overflowY: "auto", 
         }}
       >
         {output

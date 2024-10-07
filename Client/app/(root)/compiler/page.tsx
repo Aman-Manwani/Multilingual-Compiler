@@ -24,7 +24,12 @@ const CodeEditor: React.FC = () => {
     <div className="pb-4 bg-[rgb(15,10,25)]">
       <div className="px-4 pt-4 flex space-x-4">
         <div className="w-full">
-          <LanguageSelector language={language} onSelect={onSelect} />
+          <div className="flex justify-between">
+            <LanguageSelector language={language} onSelect={onSelect} />
+            <div className="flex items-end justify-between pr-3 py-5">
+              <button className="rounded-md bg-white text-black hover:bg-gray-800 hover:text-white px-4 py-3">Publish Your Code</button>
+            </div>
+          </div>
           <Editor
             options={{
               minimap: {
