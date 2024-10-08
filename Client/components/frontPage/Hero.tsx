@@ -73,7 +73,7 @@ function Hero() {
             >
               Get started
             </Link>
-            <a href="#" className="text-sm font-semibold leading-6 text-white">
+            <a href="/compiler" className="text-sm font-semibold leading-6 text-white">
               Live demo <span aria-hidden="true">→</span>
             </a>
           </div>
