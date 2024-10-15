@@ -22,7 +22,7 @@ const Output: React.FC<OutputProps> = ({ editorRef, language }) => {
       setIsError(!!result.stderr);
     } catch (error) {
       console.error(error);
-      alert(error.message || "Unable to run code");
+      // alert(error.message || "Unable to run code");
     } finally {
       setIsLoading(false);
     }

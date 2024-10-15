@@ -1,22 +1,22 @@
 "use client";
-import React from "react";
-import { useRef, useState } from "react";
-import { Editor, Monaco } from "@monaco-editor/react";
+import React, { useRef, useState } from "react";
+import { Editor } from "@monaco-editor/react";
 import LanguageSelector from "./LanguageSelector";
 import { CODE_SNIPPETS } from "../../../constants/languages";
 import Output from "./Output";
 import { MoonIcon } from "@heroicons/react/24/solid";
 import { SunIcon } from "@heroicons/react/20/solid";
+import * as monaco from "monaco-editor";
 
 const EditorComponent = () => {
-  const editorRef = useRef<Monaco | null>(null);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const [value, setValue] = useState<string>("");
   const [language, setLanguage] = useState<string>("javascript");
   const [isDark, setIsDark] = useState<boolean>(true);
 
-  const onMount = (editor: Monaco) => {
+  const onMount = (editor: monaco.editor.IStandaloneCodeEditor) => {
     editorRef.current = editor;
-    editor.focus();
+    editorRef.current.focus();
   };
 
   const onSelect = (language: string) => {

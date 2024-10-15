@@ -1,10 +1,11 @@
 import { InboxIcon, TrashIcon, UsersIcon } from '@heroicons/react/24/outline'
+import React from 'react';
 
 interface Feature {
   name: string
   description: string
   href: string
-  icon: (props: React.ComponentProps<'svg'>) => JSX.Element
+  icon: React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>>
 }
 
 const features: Feature[] = [
@@ -48,7 +49,7 @@ export default function Example() {
               <div key={feature.name} className="flex flex-col">
                 <dt className="text-base font-semibold leading-7 text-white">
                   <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500">
-                    <feature.icon className="h-6 w-6 text-white" aria-hidden="true" />
+                    {React.createElement(feature.icon, { className: "h-6 w-6 text-white", "aria-hidden": "true" })}
                   </div>
                   {feature.name}
                 </dt>

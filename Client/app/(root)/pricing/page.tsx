@@ -133,7 +133,7 @@ export default function Example() {
               </div>
               <p className="mt-4 text-sm leading-6 text-gray-300">{tier.description}</p>
               <p className="mt-6 flex items-baseline gap-x-1">
-                <span className="text-4xl font-bold tracking-tight text-white">{tier.price[frequency.value]}</span>
+                <span className="text-4xl font-bold tracking-tight text-white">{tier.price[frequency.value as 'monthly' | 'annually']}</span>
                 <span className="text-sm font-semibold leading-6 text-gray-300">{frequency.priceSuffix}</span>
               </p>
               <a
