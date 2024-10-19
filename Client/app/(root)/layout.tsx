@@ -4,6 +4,7 @@ import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   title: "AI - Compiler",
@@ -21,7 +22,14 @@ export default function RootLayout({
         <body>
         <Toaster position="top-center"/>
           <Header />
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
           <Footer />
         </body>
       </html>
