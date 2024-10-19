@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect , useRef} from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +9,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import toast, { Toaster } from 'react-hot-toast';
 import EditorComponent from "../Editor";
 import ClientComponent from "./Client";
+import {Socket} from 'socket.io-client';
+import { initSocket } from "../../socket";
+import { useRouter } from 'next/navigation';
 
 interface Client {
   socketId: string;
@@ -16,6 +19,34 @@ interface Client {
 }
 
 const Page = ({ params }: { params: { RoomId: string } }) => {
+  
+  const router = useRouter();
+  const socketRef = useRef<Socket | null>(null);
+  
+  useEffect(() => {
+    const init = async() => {
+      socketRef.current = await initSocket();
+      socketRef.current.on('connect_error', (err) => handleError(err));
+      socketRef.current.on('connect_failed', (err) => handleError(err));
+
+      const handleError = (err: any) => {
+        console.error(err);
+        toast.error('Failed to connect to the server', {
+          duration: 3000,
+          position: 'top-center',
+          icon: '🚨',
+        });
+        router.push('/collaboration');
+      }
+
+      socketRef.current.emit('join', {
+        roomId :  params.RoomId,
+        username: "Aman Manwani"
+      })
+    }
+    init();
+  },[]);
+
   const [clients, setClients] = useState<Client[]>([
     { socketId: "1", username: "Aman Manwani" },
     { socketId: "2", username: "Piyush Aaryan" },
