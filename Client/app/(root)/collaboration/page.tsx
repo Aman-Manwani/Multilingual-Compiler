@@ -2,27 +2,30 @@
 import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import { useRouter } from 'next/navigation'; // Import useRouter
+import toast from "react-hot-toast";
 
 const Page = () => {
   const [roomId, setRoomId] = useState<string>("");
   const [username, setUsername] = useState<string>("");
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
 
-  const handleNewRoom = () => {
+  const handleNewRoom = (event: React.FormEvent) => {
+    event.preventDefault();
     const newId = uuidv4();
     setRoomId(newId);
+    toast.success("New Room Created");
   };
 
   const handleJoinBtn = (event: React.FormEvent) => {
     event.preventDefault();
 
     if (roomId.trim() === "" || username.trim() === "") {
-      alert("Please enter a valid ROOM ID and USERNAME");
+      toast.error("Please enter a valid Room ID and Username");
       return;
     }
 
-    console.log(roomId, username);
     router.push(`/compiler/${roomId}`);
+    toast.success("Welcome to the Room");
   };
 
   return (

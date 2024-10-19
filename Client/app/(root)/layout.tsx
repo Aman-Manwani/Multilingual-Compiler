@@ -3,6 +3,7 @@ import "../globals.css";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "AI - Compiler",
@@ -18,6 +19,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body>
+        <Toaster position="top-center"/>
           <Header />
           {children}
           <Footer />

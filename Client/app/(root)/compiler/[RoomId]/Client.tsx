@@ -1,11 +1,18 @@
 import React from 'react'
+import Avatar from 'react-avatar'
 
-const Client = () => {
+interface props {
+  username: string;
+}
+
+
+const ClientComponent = ({username} : props) => {
   return (
-    <div>
-      Name of the client
+    <div className='flex gap-4 items-center'>
+      <Avatar name={username} size="50" round='14px' />
+      <p className="text-white font-medium text-start">{username}</p>
     </div>
   )
 }
 
-export default Client
+export default ClientComponent
