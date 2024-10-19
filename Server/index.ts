@@ -1,13 +1,25 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
+import http from 'http';
+import { Server as SocketIOServer, Socket } from 'socket.io';
+
 const app = express();
 
-app.get('/', (req, res) => {
+const server = http.createServer(app);
+
+const io = new SocketIOServer(server);
+
+interface CustomSocket extends Socket {
+
+}
+
+io.on('connection', (socket: CustomSocket) => {
+  console.log('a user connected');
+});
+
+app.get('/', (req: Request, res: Response) => {
   res.send('Hello World');
 });
 
-
-
-app.listen(5000, () => {
-  console.log('Server is running on port 3000');
+server.listen(5000, () => {
+  console.log('Server is running on port 5000');
 });
-
