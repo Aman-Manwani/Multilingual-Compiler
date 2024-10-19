@@ -1,14 +1,14 @@
 import React from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
+ 
 interface ClientComponentProps {
   username: string;
   isCollapsed: boolean;
 }
-
+ 
 const ClientComponent: React.FC<ClientComponentProps> = ({ username, isCollapsed }) => {
   const initials = username.split(' ').map(name => name[0]).join('').toUpperCase();
-
+ 
   return (
     <TooltipProvider>
       <Tooltip>
@@ -27,5 +27,5 @@ const ClientComponent: React.FC<ClientComponentProps> = ({ username, isCollapsed
     </TooltipProvider>
   );
 };
-
+ 
 export default ClientComponent;
