@@ -2,7 +2,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import { ThemeProvider } from "@/components/theme-provider"
 import { dark } from "@clerk/themes";
 
 
@@ -24,14 +23,7 @@ export default function RootLayout({
     }}>
       <html lang="en">
         <body className={`${inter.className} h-screen bg-[rgb(0,0,0)] flex justify-center items-center`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
             {children}
-          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
