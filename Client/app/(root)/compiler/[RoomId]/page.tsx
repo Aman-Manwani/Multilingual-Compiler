@@ -60,13 +60,8 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
     });
   };
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // You would typically update your app's theme here
-  };
-
   return (
-    <div className={`flex h-screen ${isDarkMode ? 'dark' : ''}`}>
+    <div className='flex h-screen dark'>
       <Toaster />
       <Card className="w-80 h-full rounded-none border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <CardHeader className="flex flex-row items-center justify-between">
@@ -74,14 +69,11 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
             <Users className="h-6 w-6" />
             <span>Live Members</span>
           </CardTitle>
-          <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
-            {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
-          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {clients.map((client) => (
-              <ClientComponent key={client.socketId} username={client.username} />
+              <ClientComponent key={client.socketId} username={client.username} isCollapsed={false}/>
             ))}
           </div>
         </CardContent>
