@@ -1,18 +1,31 @@
-import React from 'react'
-import Avatar from 'react-avatar'
+import React from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-interface props {
+interface ClientComponentProps {
   username: string;
+  isCollapsed: boolean;
 }
 
+const ClientComponent: React.FC<ClientComponentProps> = ({ username, isCollapsed }) => {
+  const initials = username.split(' ').map(name => name[0]).join('').toUpperCase();
 
-const ClientComponent = ({username} : props) => {
   return (
-    <div className='flex gap-4 items-center'>
-      <Avatar name={username} size="50" round='14px' />
-      <p className="text-white font-medium text-start">{username}</p>
-    </div>
-  )
-}
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex items-center space-x-4 cursor-pointer">
+            <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+              {initials}
+            </div>
+            {!isCollapsed && <div className="font-medium">{username}</div>}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side={isCollapsed ? "right" : "top"}>
+          <p>{username}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
-export default ClientComponent
+export default ClientComponent;

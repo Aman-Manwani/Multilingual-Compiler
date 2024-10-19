@@ -22,7 +22,9 @@ export default function RootLayout({
       baseTheme: dark,
     }}>
       <html lang="en">
-        <body className={`${inter.className} h-screen bg-[rgb(0,0,0)] flex justify-center items-center`}>{children}</body>
+        <body className={`${inter.className} h-screen bg-[rgb(0,0,0)] flex justify-center items-center`}>
+            {children}
+        </body>
       </html>
     </ClerkProvider>
   );

@@ -3,7 +3,7 @@ import React, { use, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Users, Copy, LogOut } from "lucide-react";
+import { Users, Copy, LogOut, Moon, Sun } from "lucide-react";
 import toast, { Toaster } from 'react-hot-toast';
 import EditorComponent from "../Editor";
 import ClientComponent from "./Client";
@@ -49,6 +49,7 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
     { socketId: "1", username: "Aman Manwani" },
     { socketId: "2", username: "Piyush Aaryan" },
   ]);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const copyRoomId = () => {
     navigator.clipboard.writeText(params.RoomId);
@@ -59,8 +60,13 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
     });
   };
 
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    // You would typically update your app's theme here
+  };
+
   return (
-    <div className={`flex h-screen dark`}>
+    <div className={`flex h-screen ${isDarkMode ? 'dark' : ''}`}>
       <Toaster />
       <Card className="w-80 h-full rounded-none border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <CardHeader className="flex flex-row items-center justify-between">
@@ -68,6 +74,9 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
             <Users className="h-6 w-6" />
             <span>Live Members</span>
           </CardTitle>
+          <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
+            {isDarkMode ? <Sun className="h-[1.2rem] w-[1.2rem]" /> : <Moon className="h-[1.2rem] w-[1.2rem]" />}
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -88,7 +97,7 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
           </Button>
         </div>
       </Card>
-      <div className="flex-1 overflow-hidden bg-gray-100 dark:bg-[rgb(15,10,25)]">
+      <div className="flex-1 overflow-hidden bg-gray-100 dark:bg-gray-800">
         <EditorComponent />
       </div>
     </div>
