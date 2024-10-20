@@ -5,6 +5,7 @@ import Footer from "@/components/shared/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from '@/components/theme-provider';
+import { UserProvider } from "@/context/UserContext";
 
 export const metadata: Metadata = {
   title: "AI - Compiler",
@@ -28,7 +29,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <UserProvider>
+              {children}
+            </UserProvider>
           </ThemeProvider>
           <Footer />
         </body>

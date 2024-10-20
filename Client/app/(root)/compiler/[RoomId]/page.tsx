@@ -1,5 +1,4 @@
 "use client";
- 
 import React, { useState, useEffect , useRef} from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +11,7 @@ import ClientComponent from "./Client";
 import {Socket} from 'socket.io-client';
 import { initSocket } from "../../socket";
 import { useRouter } from 'next/navigation';
+import { useUser } from "@/context/UserContext";
  
 interface Client {
   socketId: string;
@@ -19,11 +19,16 @@ interface Client {
 }
  
 const Page = ({ params }: { params: { RoomId: string } }) => {
- 
+  const [clients, setClients] = useState<Client[]>([]);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const router = useRouter();
+  const { username } = useUser();
   const socketRef = useRef<Socket | null>(null);
- 
   useEffect(() => {
+    if(!username){
+      router.push('/collaboration');
+      return;
+    }
     const init = async() => {
       socketRef.current = await initSocket();
       socketRef.current.on('connect_error', (err) => handleError(err));
@@ -41,22 +46,24 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
  
       socketRef.current.emit('join', {
         roomId :  params.RoomId,
-        username: "Aman Manwani"
+        username: username,
+      })
+      
+      socketRef.current.on('joined', ({clients, username_ser, socketId}) => {
+        console.log(clients, username_ser, socketId);
+        if(username !== username_ser){
+          toast.success(`${username_ser} joined the room`);
+        } 
+        setClients(clients);
       })
     }
     init();
   },[]);
  
-  const [clients, setClients] = useState<Client[]>([
-    { socketId: "1", username: "Aman Manwani" },
-    { socketId: "2", username: "Piyush Aaryan" },
-  ]);
-  const [isCollapsed, setIsCollapsed] = useState(false);
- 
   const copyRoomId = () => {
     navigator.clipboard.writeText(params.RoomId);
     toast.success('Room ID copied to clipboard!', {
-      duration: 3000,
+      duration: 1000,
       position: 'top-center',
       icon: '📋',
     });

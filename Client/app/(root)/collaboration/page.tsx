@@ -3,12 +3,14 @@ import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import { useRouter } from 'next/navigation'; // Import useRouter
 import toast from "react-hot-toast";
+import { useUser } from '@/context/UserContext';
 
 const Page = () => {
   const [roomId, setRoomId] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
+  const { username, setUsername } = useUser(); 
   const router = useRouter();
 
+  // console.log(username);
   const handleNewRoom = (event: React.FormEvent) => {
     event.preventDefault();
     const newId = uuidv4();
@@ -24,9 +26,7 @@ const Page = () => {
       return;
     }
 
-    router.push(`/compiler/${roomId}`, {
-      
-    });
+    router.push(`/compiler/${roomId}`);
     toast.success("Welcome to the Room");
   };
 

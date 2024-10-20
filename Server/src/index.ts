@@ -5,45 +5,76 @@ import cors from 'cors';
 
 const app = express();
 
-// Enable CORS for all routes (important if your client and server run on different domains or ports)
 app.use(cors());
 
-// Create the HTTP server
 const server = http.createServer(app);
 
-// Initialize Socket.IO server with CORS configuration
+interface UserSocketMap {
+  [socketId: string]: string;
+}
+
+interface ClientInterface {
+  socketId: string;
+  username: string;
+}
+
+const userSocketMap : UserSocketMap = {};
+
+const getAllConnectedClients = (roomId : string) => {
+  return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map(socketId => {
+    return {
+      socketId,
+      username: userSocketMap[socketId]
+    }
+  });
+}
+
 const io = new SocketIOServer(server, {
   cors: {
-    origin: "*", // Adjust this to allow specific origins (e.g., "http://localhost:3000")
+    origin: "*",
     methods: ["GET", "POST"],
   }
 });
 
-// Handle new socket connections
+
 io.on('connection', (socket: Socket) => {
   console.log('A user connected:', socket.id);
 
-  socket.on('join', (data) => {
-    
+  socket.on('join', ({roomId, username}) => {
+    userSocketMap[socket.id] = username
+    socket.join(roomId);
+    const clients:ClientInterface[] = getAllConnectedClients(roomId);
+    clients.forEach(({socketId}) => {
+      console.log(username, socketId);
+      io.to(socketId).emit('joined', {
+        clients,
+        username_ser: username,
+        socketId: socket.id,
+      });
+    })
   })
 
-  // Handle disconnection
-  socket.on('disconnect', () => {
-    console.log('A user disconnected:', socket.id);
+  socket.on('disconnecting', () => {
+    const rooms = [...socket.rooms];
+    rooms.forEach(roomId => {
+      socket.in(roomId).emit('disconnected', {
+        socketId: socket.id,
+        username: userSocketMap[socket.id]
+      });
+    });
+    delete userSocketMap[socket.id];
+    socket.disconnect();
   });
 
-  // Example event handler for custom events
   socket.on('customEvent', (data) => {
     console.log('Custom event received with data:', data);
   });
 });
 
-// Define a basic route
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World');
 });
 
-// Start the server
 server.listen(5000, () => {
   console.log('Server is running on port 5000');
 });
