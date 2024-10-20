@@ -4,9 +4,7 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import cors from 'cors';
 
 const app = express();
-
 app.use(cors());
-
 const server = http.createServer(app);
 
 interface UserSocketMap {
@@ -18,14 +16,12 @@ interface ClientInterface {
   username: string;
 }
 
-const userSocketMap : UserSocketMap = {};
+const userSocketMap: UserSocketMap = {};
+const usernameSet = new Set<string>();
 
-const getAllConnectedClients = (roomId : string) => {
+const getAllConnectedClients = (roomId: string) => {
   return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map(socketId => {
-    return {
-      socketId,
-      username: userSocketMap[socketId]
-    }
+    return { socketId, username: userSocketMap[socketId] };
   });
 }
 
@@ -36,23 +32,28 @@ const io = new SocketIOServer(server, {
   }
 });
 
-
 io.on('connection', (socket: Socket) => {
   console.log('A user connected:', socket.id);
 
-  socket.on('join', ({roomId, username}) => {
-    userSocketMap[socket.id] = username
+  socket.on('join', ({ roomId, username }) => {
+    if (usernameSet.has(username)) {
+      socket.emit('joinError', { message: 'Username already taken' });
+      return;
+    }
+
+    userSocketMap[socket.id] = username;
+    usernameSet.add(username);
     socket.join(roomId);
-    const clients:ClientInterface[] = getAllConnectedClients(roomId);
-    clients.forEach(({socketId}) => {
-      console.log(username, socketId);
+
+    const clients: ClientInterface[] = getAllConnectedClients(roomId);
+    clients.forEach(({ socketId }) => {
       io.to(socketId).emit('joined', {
         clients,
         username_ser: username,
         socketId: socket.id,
       });
-    })
-  })
+    });
+  });
 
   socket.on('disconnecting', () => {
     const rooms = [...socket.rooms];
@@ -62,13 +63,19 @@ io.on('connection', (socket: Socket) => {
         username: userSocketMap[socket.id]
       });
     });
+
+    const username = userSocketMap[socket.id];
+    if (username) {
+      usernameSet.delete(username);
+    }
     delete userSocketMap[socket.id];
-    socket.disconnect();
+    socket.leave(socket.id);
   });
 
-  socket.on('customEvent', (data) => {
-    console.log('Custom event received with data:', data);
+  socket.on('code-change', ({ roomId, code }) => {
+    socket.in(roomId).emit('code-change', { code });
   });
+
 });
 
 app.get('/', (req: Request, res: Response) => {

@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Editor } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
@@ -10,15 +10,36 @@ import { CODE_SNIPPETS } from "../../../constants/languages";
 import Output from "./Output";
 
 const EditorComponent = () => {
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const editorRef = useRef<any>(null);
   const [value, setValue] = useState<string>("");
   const [language, setLanguage] = useState<string>("javascript");
   const [isDark, setIsDark] = useState<boolean>(true);
+
+
+  useEffect(() => {
+    const init = async () => {
+      editorRef.current.on("code-change", (instance, changes) => {
+        const { origin } = changes;
+        const code = instance.getValue();
+        onCodeChange(code);
+        if (origin !== "setValue") {
+          socketRef.current.emit(ACTIONS.CODE_CHANGE, {
+            roomId,
+            code,
+          });
+        }
+      });
+    }
+    init();
+  },[])
+
 
   const onMount = (editor: monaco.editor.IStandaloneCodeEditor) => {
     editorRef.current = editor;
     editorRef.current.focus();
   };
+
+
 
   const onSelect = (newLanguage: string) => {
     setLanguage(newLanguage);

@@ -56,8 +56,21 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
         } 
         setClients(clients);
       })
+
+      socketRef.current.on('disconnected', ({socketId, username}) => {
+        toast.success(`${username} left the room`);
+        setClients((prevClients) => prevClients.filter(client => client.socketId !== socketId));
+      })
     }
     init();
+
+    return () => {
+      if(socketRef.current){
+        socketRef.current.disconnect();
+        socketRef.current.off('joined');
+        socketRef.current.off('disconnected');
+      }
+    } 
   },[]);
  
   const copyRoomId = () => {
