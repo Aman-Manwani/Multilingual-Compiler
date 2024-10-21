@@ -41,14 +41,42 @@ const Output: React.FC<OutputProps> = ({ editorRef, language, code }) => {
     setIsGptLoading(true);
     setGptMessages((prev) => [...prev, { role: "user", content: message }]);
     
+    const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error("OpenAI API key is not set");
+      setGptMessages((prev) => [...prev, { role: "assistant", content: "Error: API key is not configured." }]);
+      setIsGptLoading(false);
+      return;
+    }
+
     try {
-      // Simulate API call (replace with actual API call)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const response = "This is a simulated GPT response. Replace this with actual API integration.";
-      setGptMessages((prev) => [...prev, { role: "assistant", content: response }]);
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are a helpful assistant." },
+            ...gptMessages,
+            { role: "user", content: message }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Failed to get response from GPT');
+      }
+
+      const data = await response.json();
+      const gptResponse = data.choices[0].message.content;
+      setGptMessages((prev) => [...prev, { role: "assistant", content: gptResponse }]);
     } catch (error) {
       console.error("Error sending message to GPT:", error);
-      setGptMessages((prev) => [...prev, { role: "assistant", content: "Sorry, an error occurred." }]);
+      setGptMessages((prev) => [...prev, { role: "assistant", content: `Error: ${error}` }]);
     } finally {
       setIsGptLoading(false);
     }
