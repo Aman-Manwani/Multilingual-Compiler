@@ -2,7 +2,7 @@
 import EditorComponent from "./Editor";
 import { redirect } from "next/navigation";
 
-const CodeEditor: React.FC = async() => {
+const CodeEditor: React.FC = () => {
 
   // const user = await currentUser();
 

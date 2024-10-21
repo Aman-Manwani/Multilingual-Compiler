@@ -26,7 +26,7 @@ const Page = () => {
       return;
     }
 
-    router.push(`/compiler/${roomId}`);
+    router.push(`/collaboration/${roomId}`);
     toast.success("Welcome to the Room");
   };
 

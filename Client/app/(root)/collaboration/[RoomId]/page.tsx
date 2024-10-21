@@ -3,15 +3,16 @@ import React, { useState, useEffect , useRef} from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Users, Copy, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { Users, Copy, LogOut, ChevronLeft, ChevronRight, Code } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import toast, { Toaster } from 'react-hot-toast';
-import EditorComponent from "../Editor";
 import ClientComponent from "./Client";
 import {Socket} from 'socket.io-client';
 import { initSocket } from "../../socket";
 import { useRouter } from 'next/navigation';
 import { useUser } from "@/context/UserContext";
+import ACTIONS from "./Actions";
+import CodeEditor from './CodeEditor'
  
 interface Client {
   socketId: string;
@@ -24,11 +25,14 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
   const router = useRouter();
   const { username } = useUser();
   const socketRef = useRef<Socket | null>(null);
+  const codeRef = useRef<string | null>(null);
+
+  if(!username){
+    router.push('/collaboration');
+    return;
+  }
+
   useEffect(() => {
-    if(!username){
-      router.push('/collaboration');
-      return;
-    }
     const init = async() => {
       socketRef.current = await initSocket();
       socketRef.current.on('connect_error', (err) => handleError(err));
@@ -44,20 +48,24 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
         router.push('/collaboration');
       }
  
-      socketRef.current.emit('join', {
+      socketRef.current.emit(ACTIONS.JOIN, {
         roomId :  params.RoomId,
         username: username,
       })
       
-      socketRef.current.on('joined', ({clients, username_ser, socketId}) => {
+      socketRef.current.on(ACTIONS.JOINED, ({clients, username_ser, socketId}) => {
         console.log(clients, username_ser, socketId);
         if(username !== username_ser){
           toast.success(`${username_ser} joined the room`);
         } 
         setClients(clients);
+        socketRef.current?.emit(ACTIONS.SYNC_CODE, {
+          code: codeRef.current,
+          socketId,
+        });
       })
 
-      socketRef.current.on('disconnected', ({socketId, username}) => {
+      socketRef.current.on(ACTIONS.DISCONNECTED, ({socketId, username}) => {
         toast.success(`${username} left the room`);
         setClients((prevClients) => prevClients.filter(client => client.socketId !== socketId));
       })
@@ -67,14 +75,14 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
     return () => {
       if(socketRef.current){
         socketRef.current.disconnect();
-        socketRef.current.off('joined');
-        socketRef.current.off('disconnected');
+        socketRef.current.off(ACTIONS.JOINED);
+        socketRef.current.off(ACTIONS.DISCONNECTED);
       }
     } 
-  },[]);
+  },[username, router, params.RoomId]);
  
-  const copyRoomId = () => {
-    navigator.clipboard.writeText(params.RoomId);
+  const copyRoomId = async() => {
+    await navigator.clipboard.writeText(params.RoomId);
     toast.success('Room ID copied to clipboard!', {
       duration: 1000,
       position: 'top-center',
@@ -148,7 +156,14 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
         </Card>
       </TooltipProvider>
       <div className="flex-1 overflow-hidden bg-gray-100 dark:bg-gray-800">
-        <EditorComponent />
+        {/* <EditorComponent /> */}
+        <CodeEditor
+          socketRef={socketRef}
+          roomId={params.RoomId}
+          onCodeChange={(code: string) => {
+            codeRef.current = code;
+          }}
+        />
       </div>
     </div>
   );
