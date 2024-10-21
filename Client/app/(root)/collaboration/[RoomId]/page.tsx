@@ -1,110 +1,134 @@
-"use client";
-import React, { useState, useEffect , useRef} from "react";
+'use client'
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Users, Copy, LogOut, ChevronLeft, ChevronRight, Code } from "lucide-react";
+import { Users, Copy, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import ClientComponent from "./Client";
-import {Socket} from 'socket.io-client';
+import { Socket } from "socket.io-client";
 import { initSocket } from "../../socket";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import ACTIONS from "./Actions";
-import CodeEditor from './CodeEditor'
- 
+import CodeEditor from "./CodeEditor";
+
 interface Client {
   socketId: string;
   username: string;
 }
- 
+
 const Page = ({ params }: { params: { RoomId: string } }) => {
   const [clients, setClients] = useState<Client[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const router = useRouter();
   const { username } = useUser();
   const socketRef = useRef<Socket | null>(null);
-  const codeRef = useRef<string | null>(null);
+  const codeRef = useRef<string | null>(""); // Ensure codeRef is initialized
 
-  if(!username){
-    router.push('/collaboration');
+  if (!username) {
+    router.push("/collaboration");
     return;
   }
 
   useEffect(() => {
-    const init = async() => {
-      socketRef.current = await initSocket();
-      socketRef.current.on('connect_error', (err) => handleError(err));
-      socketRef.current.on('connect_failed', (err) => handleError(err));
- 
-      const handleError = (err: any) => {
-        console.error(err);
-        toast.error('Failed to connect to the server', {
-          duration: 3000,
-          position: 'top-center',
-          icon: '🚨',
-        });
-        router.push('/collaboration');
-      }
- 
-      socketRef.current.emit(ACTIONS.JOIN, {
-        roomId :  params.RoomId,
-        username: username,
-      })
-      
-      socketRef.current.on(ACTIONS.JOINED, ({clients, username_ser, socketId}) => {
-        console.log(clients, username_ser, socketId);
-        if(username !== username_ser){
-          toast.success(`${username_ser} joined the room`);
-        } 
-        setClients(clients);
-        socketRef.current?.emit(ACTIONS.SYNC_CODE, {
-          code: codeRef.current,
-          socketId,
-        });
-      })
+    const handleError = (err: any) => {
+      console.error(err);
+      toast.error("Failed to connect to the server", {
+        duration: 3000,
+        position: "top-center",
+        icon: "🚨",
+      });
+      router.push("/collaboration");
+    };
 
-      socketRef.current.on(ACTIONS.DISCONNECTED, ({socketId, username}) => {
-        toast.success(`${username} left the room`);
-        setClients((prevClients) => prevClients.filter(client => client.socketId !== socketId));
-      })
-    }
+    const init = async () => {
+      try {
+        socketRef.current = await initSocket();
+
+        socketRef.current.on("connect_error", handleError);
+        socketRef.current.on("connect_failed", handleError);
+
+        socketRef.current.emit(ACTIONS.JOIN, {
+          roomId: params.RoomId,
+          username: username,
+        });
+
+        socketRef.current.on(ACTIONS.JOINED, ({ clients, username_ser, socketId }) => {
+          console.log("JOINED event:", clients, username_ser, socketId);
+
+          if (username !== username_ser) {
+            toast.success(`${username_ser} joined the room`);
+          }
+
+          setClients(clients);
+          console.log('coderef is ', codeRef.current);
+          // Ensure the editor is ready before attempting to sync the code
+          if (codeRef.current) {
+            console.log("Syncing code to socketId:", socketId);
+            socketRef.current?.emit(ACTIONS.SYNC_CODE, {
+              code: codeRef.current,
+              socketId,
+            });
+          } else {
+            console.log("No code to sync yet or editor not ready");
+          }
+        });
+
+        socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
+          toast.success(`${username} left the room`);
+          setClients((prevClients) => prevClients.filter((client) => client.socketId !== socketId));
+        });
+      } catch (err) {
+        console.log("error present");
+        handleError(err);
+      }
+    };
+
+    console.log('coderef is ', codeRef.current);
     init();
 
     return () => {
-      if(socketRef.current){
+      if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current.off(ACTIONS.JOINED);
         socketRef.current.off(ACTIONS.DISCONNECTED);
       }
-    } 
-  },[username, router, params.RoomId]);
- 
-  const copyRoomId = async() => {
+    };
+  }, [username, router, params.RoomId]);
+
+  // Handle code change and set codeRef
+  const handleCodeChange = (code: string) => {
+    codeRef.current = code;
+    console.log("Code updated:", code); // Log code change
+  };
+
+
+  const copyRoomId = async () => {
     await navigator.clipboard.writeText(params.RoomId);
-    toast.success('Room ID copied to clipboard!', {
+    toast.success("Room ID copied to clipboard!", {
       duration: 1000,
-      position: 'top-center',
-      icon: '📋',
+      position: "top-center",
+      icon: "📋",
     });
   };
- 
+
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
- 
+
   return (
     <div className="flex h-screen dark">
       <Toaster />
       <TooltipProvider>
-        <Card 
+        <Card
           className={`
             transition-all duration-300 ease-in-out 
-            ${isCollapsed ? 'w-16' : 'w-64'} 
+            ${isCollapsed ? "w-16" : "w-64"} 
             h-full rounded-none border-r border-gray-200 dark:border-gray-800 
             bg-white dark:bg-gray-900 relative
-            transform ${isCollapsed ? 'translate-x-0' : 'translate-x-0'}
+            transform ${isCollapsed ? "translate-x-0" : "translate-x-0"}
           `}
         >
           <Button
@@ -115,26 +139,28 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
           >
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
-          <CardHeader className={`flex flex-row items-center justify-between ${isCollapsed ? 'px-2' : 'px-4'} pt-12 transition-all duration-300 ease-in-out`}>
-            <CardTitle className={`flex items-center space-x-2 ${isCollapsed ? 'justify-center w-full' : ''} transition-all duration-300 ease-in-out`}>
+          <CardHeader
+            className={`flex flex-row items-center justify-between ${isCollapsed ? "px-2" : "px-4"} pt-12 transition-all duration-300 ease-in-out`}
+          >
+            <CardTitle className={`flex items-center space-x-2 ${isCollapsed ? "justify-center w-full" : ""} transition-all duration-300 ease-in-out`}>
               <Users className="h-6 w-6" />
               {!isCollapsed && <span className="transition-opacity duration-300 ease-in-out">Live Members</span>}
             </CardTitle>
           </CardHeader>
-          <CardContent className={`${isCollapsed ? 'px-2' : 'px-4'} transition-all duration-300 ease-in-out`}>
+          <CardContent className={`${isCollapsed ? "px-2" : "px-4"} transition-all duration-300 ease-in-out`}>
             <div className="space-y-4">
               {clients.map((client) => (
                 <ClientComponent key={client.socketId} username={client.username} isCollapsed={isCollapsed} />
               ))}
             </div>
           </CardContent>
-          <div className={`mt-auto p-4 space-y-4 ${isCollapsed ? 'px-2' : ''} transition-all duration-300 ease-in-out`}>
+          <div className={`mt-auto p-4 space-y-4 ${isCollapsed ? "px-2" : ""} transition-all duration-300 ease-in-out`}>
             <Separator />
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button onClick={copyRoomId} className="w-full transition-all duration-300 ease-in-out" variant="outline">
-                  <Copy className={`${isCollapsed ? '' : 'mr-2'} h-4 w-4`} />
-                  <span className={`${isCollapsed ? 'hidden' : ''} transition-opacity duration-300 ease-in-out`}>Copy Room ID</span>
+                  <Copy className={`${isCollapsed ? "" : "mr-2"} h-4 w-4`} />
+                  <span className={`${isCollapsed ? "hidden" : ""} transition-opacity duration-300 ease-in-out`}>Copy Room ID</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
@@ -144,8 +170,8 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button className="w-full bg-red-600 hover:bg-red-700 text-white transition-all duration-300 ease-in-out">
-                  <LogOut className={`${isCollapsed ? '' : 'mr-2'} h-4 w-4`} />
-                  <span className={`${isCollapsed ? 'hidden' : ''} transition-opacity duration-300 ease-in-out`}>Leave Room</span>
+                  <LogOut className={`${isCollapsed ? "" : "mr-2"} h-4 w-4`} />
+                  <span className={`${isCollapsed ? "hidden" : ""} transition-opacity duration-300 ease-in-out`}>Leave Room</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
@@ -156,17 +182,14 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
         </Card>
       </TooltipProvider>
       <div className="flex-1 overflow-hidden bg-gray-100 dark:bg-gray-800">
-        {/* <EditorComponent /> */}
         <CodeEditor
           socketRef={socketRef}
           roomId={params.RoomId}
-          onCodeChange={(code: string) => {
-            codeRef.current = code;
-          }}
+          onCodeChange={handleCodeChange}
         />
       </div>
     </div>
   );
 };
- 
+
 export default Page;

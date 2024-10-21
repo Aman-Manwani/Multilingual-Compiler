@@ -13,7 +13,11 @@ const editoptions = {
   fontSize: 16,
 };
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef, roomId, onCodeChange }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({
+  socketRef,
+  roomId,
+  onCodeChange,
+}) => {
   const [language, setLanguage] = useState<string>("c");
   const [theme, setTheme] = useState<string>("vs-dark");
 
@@ -34,6 +38,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef, roomId, onCodeChange
 
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
+    onEditorReady(); // Trigger onEditorReady once the editor is mounted
   };
 
   const handleChange = (code: string | undefined) => {
@@ -43,6 +48,19 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef, roomId, onCodeChange
         code,
       });
       onCodeChange(code);
+    }
+  };
+
+  // Function to handle when editor is ready (e.g., syncing code with socket)
+  const onEditorReady = () => {
+    if (editorRef.current) {
+      const initialCode = editorRef.current.getValue();
+      // Sync initial code with socket or any other initial setup
+      socketRef.current.emit(ACTIONS.SYNC_CODE, {
+        roomId,
+        code: initialCode,
+      });
+      console.log("Editor is ready, initial code synced");
     }
   };
 
@@ -57,9 +75,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef, roomId, onCodeChange
         }
       });
 
-      socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, ({ language }: { language: string }) => {
-        setLanguage(language);
-      });
+      socketRef.current.on(
+        ACTIONS.LANGUAGE_CHANGE,
+        ({ language }: { language: string }) => {
+          setLanguage(language);
+        }
+      );
 
       return () => {
         socketRef.current.off(ACTIONS.CODE_CHANGE);
@@ -80,10 +101,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ socketRef, roomId, onCodeChange
             id="lang"
             onChange={handleChangelang}
           >
-            <option value="c">c</option>
-            <option value="javascript">javascript</option>
-            <option value="typescript">typescript</option>
-            <option value="python">python</option>
+            <option value="c">C</option>
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="python">Python</option>
           </select>
         </div>
         <div className="theme cont">
