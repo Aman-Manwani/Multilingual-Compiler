@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import ACTIONS from "./Actions";
 import CodeEditor from "./CodeEditor";
+import Output from "../../compiler/Output";
 
 interface Client {
   socketId: string;
@@ -96,7 +97,7 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
         socketRef.current.off(ACTIONS.DISCONNECTED);
       }
     };
-  }, [username, router, params.RoomId]);
+  }, []);
 
   // Handle code change and set codeRef
   const handleCodeChange = (code: string) => {
@@ -187,6 +188,7 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
           roomId={params.RoomId}
           onCodeChange={handleCodeChange}
         />
+        <Output />
       </div>
     </div>
   );

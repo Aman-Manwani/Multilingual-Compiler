@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import http from "http";
 import { Server } from "socket.io";
-import ACTIONS from "./Actions"; 
+import ACTIONS from "./Actions";
 import cors from "cors";
 import path from "path";
 
@@ -30,16 +30,16 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Map to store the username associated with each socket ID
 const userSocketMap: Record<string, string> = {};
 
-// Helper function to get all connected clients in a room
-function getAllConnectedClients(roomId: string) {
-  return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map(
-    (socketId) => {
+// Helper function to get all connected clients in a room, excluding the current socket
+function getAllConnectedClients(roomId: string, currentSocketId: string) {
+  return Array.from(io.sockets.adapter.rooms.get(roomId) || [])
+    .filter((socketId) => socketId !== currentSocketId)
+    .map((socketId) => {
       return {
         socketId,
         username: userSocketMap[socketId],
       };
-    }
-  );
+    });
 }
 
 // Socket.io connection event
@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
     userSocketMap[socket.id] = username;
     socket.join(roomId);
 
-    const clients = getAllConnectedClients(roomId);
+    const clients = getAllConnectedClients(roomId, socket.id);
 
     clients.forEach(({ socketId }) => {
       io.to(socketId).emit(ACTIONS.JOINED, {
