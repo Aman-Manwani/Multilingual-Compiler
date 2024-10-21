@@ -119,7 +119,7 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
   };
 
   return (
-    <div className="flex h-screen dark">
+    <div className="flex h-screen">
       <Toaster />
       <TooltipProvider>
         <Card
@@ -181,7 +181,7 @@ const Page = ({ params }: { params: { RoomId: string } }) => {
           </div>
         </Card>
       </TooltipProvider>
-      <div className="flex-1 overflow-hidden bg-gray-100 dark:bg-gray-800">
+      <div className="flex-1 overflow-hidden bg-gray-100 dark:bg-[rgb(15,10,25)]">
         <CodeEditor
           socketRef={socketRef}
           roomId={params.RoomId}

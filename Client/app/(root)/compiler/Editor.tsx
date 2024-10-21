@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MoonIcon, SunIcon } from "lucide-react";
 import { CODE_SNIPPETS } from "../../../constants/languages";
 import Output from "./Output";
+import { useRouter } from "next/navigation";
 
 const EditorComponent = () => {
   const editorRef = useRef<any>(null);
+  const router = useRouter();
   const [value, setValue] = useState<string>("");
   const [language, setLanguage] = useState<string>("javascript");
   const [isDark, setIsDark] = useState<boolean>(true);
@@ -43,6 +45,9 @@ const EditorComponent = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <div>
+                <Button onClick={() => router.push('/collaboration')} variant="outline">Switch To Collaborative Editor</Button>
+              </div>
               <div className="flex space-x-2">
                 <Button
                   variant="outline"
